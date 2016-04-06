@@ -31,7 +31,7 @@ class Points:
         self.max_y = 0
         if points_filename:
             self._get_from_file(points_filename)
-        self._edges = Edges().get_edges()
+        self._edges = Edges(edges_filename='edges_dump').get_edges()
         if len(self._points) is 0:
             self._collect_points()
         self._set_map_classes_for_points()

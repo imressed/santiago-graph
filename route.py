@@ -50,16 +50,33 @@ class Route:
         return arr[:arr.index(item)]+[new_item], [new_item]+arr[arr.index(item)+1:]
 
     def _split_array_by_segment(self, arr, segment, new_item):
-        pass
+        print(abs(arr.index(segment[0]) - arr.index(segment[1])))
+        if arr.index(segment[0]) < arr.index(segment[1]):
+            return arr[:arr.index(segment[0])+1]+[new_item], [new_item]+arr[arr.index(segment[1]):]
+        else:
+            return arr[:arr.index(segment[1])+1]+[new_item], [new_item]+arr[arr.index(segment[0]):]
 
-    def split_edge_by_new_point(self, segment, point):
+    def split_edge_by_new_point(self, segment, new_point):
         points = [self.start_point] + self.waypoints + [self.end_point]
+
+        edge1 = CalculatedEdge({'direction':self.edge.direction,
+                                'hierarchy':self.edge.hierarchy,
+                                'speed_indicators':self.edge.speed_indicators})
+        edge2 = CalculatedEdge({'direction':self.edge.direction,
+                                'hierarchy':self.edge.hierarchy,
+                                'speed_indicators':self.edge.speed_indicators})
+
+        new_points1, new_points2 = self._split_array_by_segment(points, segment, new_point)
+        route1 = Route(new_points1, edge1, split=True)
+        route2 = Route(new_points2, edge2, split=True)
+        return {1:{'edge':edge1, 'route':route1},
+                2:{'edge':edge2, 'route':route2}}
 
 
     def check_one_by_one_order(self, point_start, point_end):
         points = [self.start_point] + self.waypoints + [self.end_point]
         index_diff = abs(points.index(point_start) - points.index(point_end))
-        if index_diff is not 1:
+        if index_diff != 1:
             return False
         return True
 

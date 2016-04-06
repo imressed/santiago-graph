@@ -1,3 +1,5 @@
+import pickle
+import sys
 import pandas as pd
 from edge import Edge
 from helpers import timed
@@ -17,9 +19,12 @@ class Edges:
     '''
     _edges = dict()
 
-    def __init__(self):
-        self._edges = {}
-        self._collect_edges()
+    def __init__(self, edges_filename=''):
+        self._edges = {}        
+        if edges_filename:
+            self._get_from_file(edges_filename)
+        if len(self._edges) is 0:
+            self._collect_edges()
 
     def add_edge(self, edge):
         self._edges[edge.edge_id] = edge
@@ -30,6 +35,14 @@ class Edges:
 
     def get_edges(self):
         return self._edges
+
+    @timed
+    def _get_from_file(self, filename):
+        self._edges = pickle.load(open(filename,'rb'))
+
+    def save_to_file(self, filename='points'):
+        sys.setrecursionlimit(100000)
+        pickle.dump(self._edges, open(filename, 'wb'))
 
     @timed
     def _collect_edges(self):

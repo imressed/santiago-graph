@@ -16,3 +16,5 @@ test
 *.csv
 
 david.py
+
+edges_dump

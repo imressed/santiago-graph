@@ -28,7 +28,7 @@ class Routes:
         route = Route(waypoints,edge)
         self._routes[id] = route
 
-    def split_edges(self,new_point, points_arr):
+    def split_edges(self, new_point, points_arr):
         for item in points_arr:
             old_point = item
             route = self._routes[old_point.edge_id]
@@ -47,6 +47,10 @@ class Routes:
                 self._routes[result['edge'].edge_id] = result['route']
 
     def fix_intersection(self,segment1, segment2):
+        if segment1[1].edge_id != segment1[0].edge_id:
+            return False
+        if segment2[1].edge_id == segment2[0].edge_id:
+            return False
 
         intersection_point = segment_intersection(segment1, segment2)
 
@@ -60,7 +64,22 @@ class Routes:
 
         result1 = route1.split_edge_by_new_point(segment1, new_point)
         result2 = route2.split_edge_by_new_point(segment2, new_point)
-        # not finished
+
+        if result1:
+            self._edges.pop(segment1[0].edge_id, None)
+            self._routes.pop(segment1[0].edge_id, None)
+            self._edges[result1[1]['edge'].edge_id] = result1[1]['edge']
+            self._edges[result1[2]['edge'].edge_id] = result1[2]['edge']
+            self._routes[result1[1]['edge'].edge_id] = result1[1]['route']
+            self._routes[result1[2]['edge'].edge_id] = result1[2]['route']
+
+        if result2:
+            self._edges.pop(segment2[0].edge_id, None)
+            self._routes.pop(segment2[0].edge_id, None)
+            self._edges[result2[1]['edge'].edge_id] = result2[1]['edge']
+            self._edges[result2[2]['edge'].edge_id] = result2[2]['edge']
+            self._routes[result2[1]['edge'].edge_id] = result2[1]['route']
+            self._routes[result2[2]['edge'].edge_id] = result2[2]['route']
 
     def check_one_by_one_order_in_path(self, point_start, point_end):
         if point_start.edge_id != point_end.edge_id:
