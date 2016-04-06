@@ -1,5 +1,6 @@
 from copy import deepcopy
 from points import Points
+from point import CalculatedPoint
 from edges import Edges
 from edge import CalculatedEdge
 from route import Route
@@ -47,17 +48,19 @@ class Routes:
                 self._routes[result['edge'].edge_id] = result['route']
 
     def fix_intersection(self,segment1, segment2):
-        if segment1[1].edge_id != segment1[0].edge_id:
-            return False
-        if segment2[1].edge_id == segment2[0].edge_id:
-            return False
+
+        
+        # validating intersection classes, fix not work now!
+
+
+        # if segment1[1].edge_id != segment1[0].edge_id:
+        #     return False
+        # if segment2[1].edge_id == segment2[0].edge_id:
+        #     return False
 
         intersection_point = segment_intersection(segment1, segment2)
 
-        new_point = deepcopy(segment1[0]) # to get a new instance of Point class.
-        new_point.x = intersection_point[0]
-        new_point.y = intersection_point[1]
-        new_point.is_waypoint = False
+        new_point = CalculatedPoint(intersection_point[0], intersection_point[1], segment1[0].hierarchy)
 
         route1 = self._routes[segment1[0].edge_id]
         route2 = self._routes[segment2[1].edge_id]

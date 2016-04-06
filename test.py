@@ -1,4 +1,4 @@
-from helpers import euclidean, segment_intersection, neighbours
+from helpers import euclidean, segment_intersection, neighbours, distance_point_line
 import pickle
 
 #print(line_intersection( ( (0,0), (3,3) ), ( (0,1), (0,2) ) ) )
@@ -44,4 +44,4 @@ def segment_intersection(line1, line2):
     y = det(d, ydiff) / div
     return x, y
 
-print(segment_intersection([[1,1],[3,3]],[[2,2],[1,3]]))
+print(distance_point_line(5,4,0,0,4,4))

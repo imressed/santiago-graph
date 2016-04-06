@@ -55,7 +55,8 @@ class IntersectionsError:
             print('calculating classes for sector: {0}'.format(key))
             points_combinations = [item for item in combinations(value, 2)
                                         if (item[0].edge_id == item[1].edge_id) and
-                                        self._routes.check_one_by_one_order_in_path(item[0],item[1])]
+                                        self._routes.check_one_by_one_order_in_path(item[0],item[1]) and
+                                        item[0].hierarchy == item[1].hierarchy]
             for item in combinations(points_combinations, 2):
                 intersection = segment_intersection(item[0], item[-1])
                 if intersection: # and item[0][0].edge_id != item[1][0].edge_id: if only different edge can intersect
