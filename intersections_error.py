@@ -66,3 +66,6 @@ class IntersectionsError:
 
     def get_classes(self):
         return self._classes
+
+    def fix_intersection(self, segment1, segment2):
+        self._routes.fix_intersection(segment1, segment2)

@@ -3,7 +3,7 @@ from points import Points
 from edges import Edges
 from edge import CalculatedEdge
 from route import Route
-from helpers import timed
+from helpers import timed, segment_intersection
 
 
 class Routes:
@@ -46,17 +46,20 @@ class Routes:
             else:
                 self._routes[result['edge'].edge_id] = result['route']
 
-    def split_edge_by_new_point(self,edge_segment, new_point_coordinates):
+    def fix_intersection(self,segment1, segment2):
 
-        if edge_segment[0].edge_id != edge_segment[1].edge_id:
-            return False
+        intersection_point = segment_intersection(segment1, segment2)
 
-        new_point = deepcopy(edge_segment[0])
-        new_point.x = new_point_coordinates[0]
-        new_point.y = new_point_coordinates[1]
+        new_point = deepcopy(segment1[0]) # to get a new instance of Point class.
+        new_point.x = intersection_point[0]
+        new_point.y = intersection_point[1]
+        new_point.is_waypoint = False
 
-        route = self._routes[edge_segment[0].edge_id]
-        result = route.split_edge_by_new_point(edge_segment, new_point)
+        route1 = self._routes[segment1[0].edge_id]
+        route2 = self._routes[segment2[1].edge_id]
+
+        result1 = route1.split_edge_by_new_point(segment1, new_point)
+        result2 = route2.split_edge_by_new_point(segment2, new_point)
         # not finished
 
     def check_one_by_one_order_in_path(self, point_start, point_end):

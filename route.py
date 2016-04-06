@@ -49,8 +49,12 @@ class Route:
     def _split_array_by_item(self, arr, item, new_item):
         return arr[:arr.index(item)]+[new_item], [new_item]+arr[arr.index(item)+1:]
 
-    def split_edge_by_new_point(self, edge_segment, point):
+    def _split_array_by_segment(self, arr, segment, new_item):
         pass
+
+    def split_edge_by_new_point(self, segment, point):
+        points = [self.start_point] + self.waypoints + [self.end_point]
+
 
     def check_one_by_one_order(self, point_start, point_end):
         points = [self.start_point] + self.waypoints + [self.end_point]
