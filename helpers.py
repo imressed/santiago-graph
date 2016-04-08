@@ -60,7 +60,11 @@ def distance_point_line (px, py, x1, y1, x2, y2):
     u = u1 / (LineMag * LineMag)
 
     if (u < 0.00001) or (u > 1):
-        print(u)
+        # just for test! if conditions are satisfied, its mean that nearest point to segment
+        # is the beginning or ending of the segment, and this is the problem of another class.
+        return 9999999999999
+        #------------------
+        
         ix = line_magnitude(px, py, x1, y1)
         iy = line_magnitude(px, py, x2, y2)
         if ix > iy:
