@@ -44,4 +44,4 @@ def segment_intersection(line1, line2):
     y = det(d, ydiff) / div
     return x, y
 
-print(distance_point_line(5,4,0,0,4,4))
+print(distance_point_line(0,1,0,0,4,4))

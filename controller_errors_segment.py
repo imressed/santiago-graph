@@ -1,10 +1,10 @@
-from intersections_error import IntersectionsError
+from near_segment_error import NearSegmentError
 
 if __name__ == '__main__':
 
-    error_handler = IntersectionsError()
+    error_handler = NearSegmentError()
 
-    print('start intersection fix')
+    print('start near segment error handling')
     print('Error classes: {0}'.format(len(error_handler.get_classes())))
     # for key,value in error_handler.get_classes().items():
     #     print(value[0])
