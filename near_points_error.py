@@ -2,7 +2,7 @@ from routes import Routes
 from itertools import combinations
 from helpers import timed, euclidean
 
-MERGE_RADIUS = 10000 # 10,000 = 1m in this radius we'll merge the points
+MERGE_RADIUS = 1 # 10,000 = 1m in this radius we'll merge the points
 
 
 class NearPointsError:
