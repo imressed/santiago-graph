@@ -6,14 +6,16 @@ if __name__ == '__main__':
     error_handler = NearPointsError()
 
     counter = 1
+    length = len(error_handler.get_ds_result())
+
+    print(error_handler._routes.get_routes()['209525'])
+
     for item in error_handler.get_ds_result():
-        if len(item) == 2:
-            print('{0} of 76371'.format(counter))
-            counter += 1
-            error_handler.merge_points(item)
+        print('{0} of {1}'.format(counter, length))
+        counter += 1
+        error_handler.merge_points(item)
 
     error_handler.reset_classes_for_points_disjoint_set()
-    print(len(error_handler.get_ds_result()))
     pairs = 0
     tripple = 0
     more_than_2 = 0

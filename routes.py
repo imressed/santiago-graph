@@ -35,11 +35,11 @@ class Routes:
             route = self._routes[old_point.edge_id]
 
             result = route.split_edge(old_point=old_point, new_point=new_point)
-            if old_point is not new_point:
-                self._points[self._points.index(old_point)] = self._points[self._points.index(new_point)]
+
             if result['changed']:
-                self._edges.pop(old_point.edge_id, None)
-                self._routes.pop(old_point.edge_id, None)
+                self._edges[old_point.edge_id] = result[1]['edge']
+                self._routes[old_point.edge_id] = result[1]['route']
+
                 self._edges[result[1]['edge'].edge_id] = result[1]['edge']
                 self._edges[result[2]['edge'].edge_id] = result[2]['edge']
                 self._routes[result[1]['edge'].edge_id] = result[1]['route']
@@ -47,9 +47,12 @@ class Routes:
             else:
                 self._routes[result['edge'].edge_id] = result['route']
 
+            if old_point is not new_point:
+                self._points[self._points.index(old_point)] = self._points[self._points.index(new_point)]
+
     def fix_intersection(self,segment1, segment2):
 
-        
+
         # validating intersection classes, fix not work now!
 
 
@@ -97,6 +100,7 @@ class Routes:
         waypoints = []
         for point in self._points:
             if point.edge_id != edge_id:
+                print(edge_id)
                 self._add_route(waypoints, edge_id)
                 waypoints = []
                 edge_id = point.edge_id

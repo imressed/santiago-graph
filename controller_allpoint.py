@@ -10,6 +10,8 @@ if __name__ == '__main__':
     print(points.max_y, points.min_y)
 
     i = 0
-    for point in points_iterator:
-        #print ('edge_id {0}, {3} \n from_me {1} \n to-me {2}'.format(point.edge_id, point.from_me, point.to_me, point.role))
-        print('edge_id {0}, role {1}, {2} {3} {4}'.format(point.edge_id, point.role, point.x, point.y, point.cell))
+    print(points_iterator[-1].edge_id)
+
+    # for point in points_iterator:
+    #     #print ('edge_id {0}, {3} \n from_me {1} \n to-me {2}'.format(point.edge_id, point.from_me, point.to_me, point.role))
+    #     print('edge_id {0}, role {1}, {2} {3} {4}'.format(point.edge_id, point.role, point.x, point.y, point.cell))
