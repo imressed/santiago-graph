@@ -104,6 +104,11 @@ class Routes:
                 self._add_route(waypoints, edge_id)
                 waypoints = []
                 edge_id = point.edge_id
+            if point == self._points[-1]: # for collecting the last edge
+                waypoints.append(point)
+                print(edge_id)
+                self._add_route(waypoints, edge_id)
+                return True
             waypoints.append(point)
 
     def get_routes(self):
