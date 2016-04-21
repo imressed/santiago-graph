@@ -1,3 +1,5 @@
+import pickle
+import sys
 from routes import Routes
 from itertools import combinations
 from helpers import timed, euclidean
@@ -105,6 +107,10 @@ class NearPointsError:
 
     def get_classes(self):
         return self._classes
+
+    def save_to_file(self, filename='dump_routes_after_near_points_error_fix'):
+        sys.setrecursionlimit(100000)
+        pickle.dump(self._routes, open(filename, 'wb'))
 
     def merge_points(self, arr):
         self._routes.split_edges(new_point=arr[0], points_arr=arr)
