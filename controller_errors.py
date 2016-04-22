@@ -18,26 +18,16 @@ if __name__ == '__main__':
     # error_handler.save_to_file()
     #
     # error_handler.reset_classes_for_points_disjoint_set()
-    pairs = 0
-    tripple = 0
-    more_than_2 = 0
-    alone = 0
+    errors = dict()
 
     for item in error_handler.get_ds_result():
-        if len(item) == 1:
-            alone += 1
-        elif len(item) == 2:
-            pairs += 1
-        elif len(item) == 3:
-            tripple += 1
-        elif len(item) > 2:
-            more_than_2 += 1
-        print([it.edge_id for it in item])
-    print("\n So, we have\n Standalone points:      {0}".format(alone))
-    print("Classes with 2 points:       {0}".format(pairs))
-    print("Classes with 3 points:       {0}".format(tripple))
+        if len(item) not in errors:
+            errors[len(item)] = 1
+        else:
+            errors[len(item)] += 1
 
-    print("Classes with more than 2 points:     {0}".format(more_than_2))
+    for key, value in errors.items():
+        print("Classes with {0} points:       {1}".format(key, value))
 
 '''
     print(len(error_handler.get_classes()))

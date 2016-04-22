@@ -1,3 +1,4 @@
+import pickle
 from copy import deepcopy
 from points import Points
 from point import CalculatedPoint
@@ -20,9 +21,19 @@ class Routes:
     _routes = dict()
     _points = list()
 
-    def __init__(self):
+    def __init__(self, filename=None):
+        if filename != None:
+            routes = self._get_from_file(filename)
+            self._points, self._edges = routes.get_points_edges()
+            self._routes = routes.get_routes()
+            return
+
         self._points, self._edges = Points('points_dump_with_neighbors').get_points_edges()
         self._calculate_routes()
+
+    @timed
+    def _get_from_file(self, filename):
+        return pickle.load(open(filename,'rb'))
 
     def _add_route(self, waypoints, id):
         edge = self._edges[id]

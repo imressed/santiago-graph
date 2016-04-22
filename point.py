@@ -61,7 +61,7 @@ class Point:
 class CalculatedPoint:
 
 
-    def __init__(self, x, y, hierarchy):
+    def __init__(self, x, y, hierarchy, from_me, to_me):
         self.id = generate_unique_id()
         self.x = x
         self.y = y
@@ -70,6 +70,6 @@ class CalculatedPoint:
         self.new_edge_id = []
         self.role = None
         self.cell = 0
-        self.from_me = []
-        self.to_me = []
+        self.from_me = from_me
+        self.to_me = to_me
         self.is_waypoint = False
