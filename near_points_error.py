@@ -4,7 +4,7 @@ from routes import Routes
 from itertools import combinations
 from helpers import timed, euclidean
 
-MERGE_RADIUS = 1 # 10,000 = 1m in this radius we'll merge the points
+MERGE_RADIUS = 10000 # 10,000 = 1m in this radius we'll merge the points
 
 
 class NearPointsError:
@@ -24,11 +24,16 @@ class NearPointsError:
     _result_ds = list()
 
     def __init__(self):
-        self._routes = Routes()
+        self._routes = self._get_from_file("dump_routes_after_near_points_error_fix")
+        #self._routes = Routes()
         self._unsorted, self._initial_edges = self._routes.get_points_edges()
 
         #self._set_classes_for_points() #to calculate classes without disjoint set
         self._set_classes_for_points_disjoint_set()
+
+    @timed
+    def _get_from_file(self, filename):
+        return pickle.load(open(filename,'rb'))
 
     def _find(self, sector, el):
         for point in sector:
