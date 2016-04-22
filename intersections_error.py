@@ -23,6 +23,10 @@ class IntersectionsError:
         self._unsorted, self._initial_edges = self._routes.get_points_edges()
         self._set_classes_for_points()
 
+    @timed
+    def _get_from_file(self, filename):
+        return pickle.load(open(filename,'rb'))    
+
     def _find(self, sector, el):
         for point in sector:
             if el in point:
