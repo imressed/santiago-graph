@@ -1,3 +1,4 @@
+import pickle
 from routes import Routes
 from itertools import combinations
 from helpers import timed, segment_intersection
@@ -19,9 +20,14 @@ class IntersectionsError:
     _classes = dict()
 
     def __init__(self):
+        #self._routes = self._get_from_file("dump_routes_after_near_points_error_fix")
         self._routes = Routes()
         self._unsorted, self._initial_edges = self._routes.get_points_edges()
         self._set_classes_for_points()
+
+    @timed
+    def _get_from_file(self, filename):
+        return pickle.load(open(filename,'rb'))
 
     def _find(self, sector, el):
         for point in sector:
