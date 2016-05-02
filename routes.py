@@ -23,9 +23,8 @@ class Routes:
 
     def __init__(self, filename=None):
         if filename != None:
-            routes = self._get_from_file(filename)
-            self._points, self._edges = routes.get_points_edges()
-            self._routes = routes._routes
+            dump = self._get_from_file(filename)
+            self._points, self._edges, self._routes = dump['points'], dump['edges'], dump['routes']
             return
 
         self._points, self._edges = Points('points_dump_with_neighbors').get_points_edges()

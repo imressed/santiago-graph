@@ -17,7 +17,6 @@ if __name__ == '__main__':
 
 
     error_handler.save_to_file()
-    error_handler._routes.save_to_file()
 
     error_handler.reset_classes_for_points_disjoint_set()
     errors = dict()

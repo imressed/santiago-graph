@@ -10,7 +10,7 @@ def get_from_file(filename):
     return pickle.load(open(filename,'rb'))
 
 if __name__ == '__main__':
-    routes = Routes("dump_routes_after_near_points_error_fix_v2")
+    routes = Routes("dump_near_points_error_final_as_dict")
     print("routes: {0}".format(len(routes._routes)))
     print("points: {0}".format(len(routes._points)))
     print("enique points: {0}".format(len(set(routes._points))))
@@ -21,12 +21,18 @@ if __name__ == '__main__':
     print("routes: {0}".format(len(r)))
 
     for key,value in routes._edges.items():
-        if key not in r.keys():
+        if key not in routes._routes.keys():
             print(key)
 
-    for key,value in r.items():
+    for key,value in routes._routes.items():
         if key not in routes._edges.keys():
             print(key)
+
+    # dump = get_from_file('test_dump')
+    # print("routes: {0}".format(len(dump['routes'])))
+    # print("points: {0}".format(len(dump['points'])))
+    # print("enique points: {0}".format(len(set(dump['points']))))
+    # print("edges: {0}".format(len(dump['edges'])))
 
 
     # for key, route in routes.items():

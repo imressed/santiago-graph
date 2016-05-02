@@ -111,9 +111,10 @@ class NearPointsError:
     def get_classes(self):
         return self._classes
 
-    def save_to_file(self, filename='dump_routes_after_near_points_error_fix_v2'):
+    def save_to_file(self, filename='dump_near_points_error_final_as_dict'):
         sys.setrecursionlimit(1000000)
-        pickle.dump(self._routes, open(filename, 'wb'))
+        result = {'routes':self._routes._routes, 'edges':self._routes._edges, 'points':self._routes._points}
+        pickle.dump(result, open(filename, 'wb'))
 
     def merge_points(self, arr):
         self._routes.split_edges(new_point=arr[0], points_arr=arr)
