@@ -1,4 +1,4 @@
-import pickle
+import pickle, sys
 from copy import deepcopy
 from points import Points
 from point import CalculatedPoint
@@ -25,7 +25,7 @@ class Routes:
         if filename != None:
             routes = self._get_from_file(filename)
             self._points, self._edges = routes.get_points_edges()
-            self._routes = routes.get_routes()
+            self._routes = routes._routes
             return
 
         self._points, self._edges = Points('points_dump_with_neighbors').get_points_edges()
@@ -34,6 +34,10 @@ class Routes:
     @timed
     def _get_from_file(self, filename):
         return pickle.load(open(filename,'rb'))
+
+    def save_to_file(self, filename='dump_routes'):
+        sys.setrecursionlimit(1000000)
+        pickle.dump(self._routes, open(filename, 'wb'))
 
     def _add_route(self, waypoints, id):
         edge = self._edges[id]
