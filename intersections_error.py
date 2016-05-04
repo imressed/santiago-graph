@@ -21,7 +21,7 @@ class IntersectionsError:
 
     def __init__(self):
         #self._routes = self._get_from_file("dump_routes_after_near_points_error_fix")
-        self._routes = Routes()
+        self._routes = Routes("dump_near_points_error_final_as_dict")
         self._unsorted, self._initial_edges = self._routes.get_points_edges()
         self._set_classes_for_points()
 
@@ -64,8 +64,6 @@ class IntersectionsError:
                 intersection = segment_intersection(item[0], item[-1])
                 if intersection and item[0][0].hierarchy == item[-1][0].hierarchy: # and item[0][0].edge_id != item[1][0].edge_id: if only different edge can intersect
                     self._classes[len(self._classes)] = item
-                    # test on map intersections
-                    print ('hierarchy {0}'.format(item[0][0].hierarchy))
 
     # this func is just for testing reasons (resetting all the classes to check correct error handling)
     @timed

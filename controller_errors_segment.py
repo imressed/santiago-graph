@@ -4,8 +4,9 @@ if __name__ == '__main__':
 
     error_handler = NearSegmentError()
 
-    print('start near segment error handling')
+
     print('Error classes: {0}'.format(len(error_handler.get_classes())))
+    # print('start near segment error handling')
     # for key,value in error_handler.get_classes().items():
     #     print(value[0])
     #     print(value[1])
