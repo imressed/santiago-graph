@@ -108,6 +108,14 @@ class Routes:
         result = route.check_one_by_one_order(point_start, point_end)
         return result
 
+    def check_points_accessability(self, point_start, point_end):
+        if point_end in point_start.from_me:
+            return True
+        elif point_start in point_end.from_me:
+            return True
+        else:
+            return False
+
     @timed
     def _calculate_routes(self):
         edge_id = 1
