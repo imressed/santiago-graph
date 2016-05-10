@@ -1,18 +1,15 @@
 import pandas as pd
+from helpers import timed
 from point import Point
 
 
-# read points and edges from dumps
-ALL_POINTS = pd.read_csv('../ALLPOINTTEST.csv')
-EJES = pd.read_csv('../EJES.csv')
-
-points_set = set()
-points_list = list()
-segments = list()
-
+@timed
 def get_edges():
+    #load edges from dump
+    EJES = pd.read_csv('../EJES.csv')
     edges = dict()
     for index, row in EJES.iterrows():
+        #dictionary of edges, key - edge_id; value - edge parameters
         edges[int(row['id_eje'])] = {
             'id': index,
             'edge_id': int(row['id_eje']),
@@ -29,11 +26,33 @@ def get_edges():
         }
     return edges
 
-def get_points_set_and_points_list_and_segments():
-    current_point_id = 0
+@timed
+def get_points_set_and_points_list_and_segments(edges):
+    # read points from dumps
+    ALL_POINTS = pd.read_csv('../ALLPOINT.csv')
+
+    points_dict = dict()
+    points_set = set()
+    points_list = list()
+    segments = list()
+
+    for index, row in ALL_POINTS.iterrows():
+        #set of unique points in dump
+        points_set.add( (row['X'],row['Y']) )
+        #list of all points in dump
+        points_list.append({
+            'id': index,
+            'edge_id': row['id_eje'],
+            'x': row['X'],
+            'y': row['Y']
+        })
+    return points_set, points_list
 
 if __name__ == '__main__':
 
     edges = get_edges()
 
-    print(edges)
+    st, lst = get_points_set_and_points_list_and_segments(edges)
+
+    print(len(st))
+    print(len(lst))
