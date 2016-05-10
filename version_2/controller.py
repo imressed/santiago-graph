@@ -37,15 +37,12 @@ def get_points_set_and_points_list_and_segments(edges):
     segments = list()
 
     for index, row in ALL_POINTS.iterrows():
+
+        point = Point(index, row['X'], row['Y'], row['id_eje'])
         #set of unique points in dump
-        points_set.add( (row['X'],row['Y']) )
+        points_set.add(point)
         #list of all points in dump
-        points_list.append({
-            'id': index,
-            'edge_id': row['id_eje'],
-            'x': row['X'],
-            'y': row['Y']
-        })
+        points_list.append(point)
     return points_set, points_list
 
 if __name__ == '__main__':
