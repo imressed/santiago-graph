@@ -19,6 +19,9 @@ def timed(f):
     return wrapper
 
 def pairing_func(a, b):
+    '''
+    creates a unique number from two numbers. Called Cantor pairing function.
+    '''
     return 0.5*(a+b)*(a+b+1)+b
 
 def generate_unique_id():
