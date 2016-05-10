@@ -18,6 +18,9 @@ def timed(f):
         return result
     return wrapper
 
+def pairing_func(a, b):
+    return 0.5*(a+b)*(a+b+1)+b
+
 def generate_unique_id():
     '''
     generates a random UUID

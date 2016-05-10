@@ -1,12 +1,15 @@
-
+from helpers import pairing_func
 
 class Point(object):
 
     def __init__(self, id, x, y, edge_id):
         self.id = id
-        self.x = x
-        self.y = y
-        self.edge_id = edge_id
+        self.x = int(x)
+        self.y = int(y)
+        self.edge_id = int(edge_id)
 
     def __hash__(self):
-        return (self.x, self.y)
+        return hash((self.x,self.y))
+
+    def __eq__(self, other):
+        return hash((self.x,self.y)) == hash((other.x,other.y))
