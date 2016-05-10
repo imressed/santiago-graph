@@ -1,6 +1,6 @@
 
 
-class Point(Object):
+class Point(object):
 
     def __init(self, id, x, y):
         self.id = id
