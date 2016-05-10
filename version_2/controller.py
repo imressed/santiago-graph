@@ -1,5 +1,5 @@
 import pandas as pd
-from helpers import timed
+from helpers import timed, euclidean
 from point import Point
 
 
@@ -35,21 +35,53 @@ def get_points_set_and_points_list_and_segments(edges):
     points_set = set()
     points_list = list()
     segments = list()
+    # initialize empty initial point
+    previous_point = Point()
 
     for index, row in ALL_POINTS.iterrows():
-
         point = Point(index, row['X'], row['Y'], row['id_eje'])
+        current_edge = edges[point.edge_id]
+        # calculate segment. first check if current point has the same edge with previous one.
+        if point.edge_id == previous_point.edge_id:
+            #then check the direction of edge of this point. if direction is 0 - bidirectional, add for both cases
+            if current_edge['direction'] == 1 or current_edge['direction'] == 0:
+                segments.append({
+                    'from': previous_point,
+                    'to':point,
+                    'hierarchy': current_edge['hierarchy'],
+                    'street_id': current_edge['street_id'],
+                    'edge_id': current_edge['edge_id'],
+                    'length': euclidean((previous_point.x,previous_point.y),(point.x,point.y))
+                })
+            if current_edge['direction'] == -1 or current_edge['direction'] == 0:
+                segments.append({
+                    'from': point,
+                    'to': previous_point,
+                    'hierarchy': current_edge['hierarchy'],
+                    'street_id': current_edge['street_id'],
+                    'edge_id': current_edge['edge_id'],
+                    'length': euclidean((previous_point.x,previous_point.y),(point.x,point.y))
+                })
+        previous_point = point
+
         #set of unique points in dump
         points_set.add(point)
         #list of all points in dump
         points_list.append(point)
-    return points_set, points_list
+
+
+    return points_set, points_list, segments
 
 if __name__ == '__main__':
 
     edges = get_edges()
 
-    st, lst = get_points_set_and_points_list_and_segments(edges)
+    st, lst, segments = get_points_set_and_points_list_and_segments(edges)
 
     print(len(st))
     print(len(lst))
+    for item in segments:
+        print('edge Id - {}'.format(item['edge_id']))
+        print('edge Dir - {}'.format(edges[item['edge_id']]['direction']))
+        print('from {}'.format(item['from']))
+        print('to   {}'.format(item['to']))
