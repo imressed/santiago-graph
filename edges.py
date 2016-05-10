@@ -20,7 +20,7 @@ class Edges:
     _edges = dict()
 
     def __init__(self, edges_filename=''):
-        self._edges = {}        
+        self._edges = {}
         if edges_filename:
             self._get_from_file(edges_filename)
         if len(self._edges) is 0:
@@ -40,7 +40,7 @@ class Edges:
     def _get_from_file(self, filename):
         self._edges = pickle.load(open(filename,'rb'))
 
-    def save_to_file(self, filename='points'):
+    def save_to_file(self, filename='edges'):
         sys.setrecursionlimit(100000)
         pickle.dump(self._edges, open(filename, 'wb'))
 
