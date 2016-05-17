@@ -3,8 +3,8 @@ from helpers import timed, euclidean
 from point import Point
 
 
-XCELLS = 100000 # number of x cells
-YCELLS = 100000 # number of y cells
+XCELLS = 1000000 # number of x cells
+YCELLS = 1000000 # number of y cells
 
 max_x = 4249623422
 min_x = 2536497904
@@ -47,6 +47,12 @@ def get_points_set_and_points_list_and_segments(edges):
     # print("max Y = {}".format(max(ALL_POINTS.iterrows(), key=lambda x: x[1]['Y'])))
     # print("min Y = {}".format(min(ALL_POINTS.iterrows(), key=lambda x: x[1]['Y'])))
 
+    #init variables for cells calculating
+    diff_x = max_x - min_x
+    diff_y = max_y - min_y
+    step_x = diff_x // XCELLS
+    step_y = diff_y // YCELLS
+
     points_dict = dict()
     points_set = set()
     points_list = list()
@@ -57,7 +63,14 @@ def get_points_set_and_points_list_and_segments(edges):
 
 
     for index, row in ALL_POINTS.iterrows():
-        point = Point(index, row['X'], row['Y'], row['id_eje'])
+        #calculate cell for each point
+        x_cell = (row['X'] - min_x) // step_x
+        y_cell = (row['Y'] - min_y) // step_y
+        point_cell = (y_cell * YCELLS + x_cell)
+
+        # create current point
+        point = Point(index, row['X'], row['Y'], row['id_eje'], point_cell)
+        #get edge, connected with this point
         current_edge = edges[point.edge_id]
         # calculate segment. first check if current point has the same edge with previous one.
         if point.edge_id == previous_point.edge_id:
@@ -99,6 +112,10 @@ if __name__ == '__main__':
     print(len(st))
     print(len(lst))
 
+    print(lst[0].cell)
+    print(lst[1000].cell)
+
+    print(lst[100].cell)
 
     # for item in segments:
     #     print('edge Id - {}'.format(item['edge_id']))
