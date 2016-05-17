@@ -3,6 +3,16 @@ from helpers import timed, euclidean
 from point import Point
 
 
+XCELLS = 100000 # number of x cells
+YCELLS = 100000 # number of y cells
+
+max_x = 4249623422
+min_x = 2536497904
+
+max_y = 63569714121
+min_y = 62065572485
+
+
 @timed
 def get_edges():
     #load edges from dump
@@ -31,12 +41,20 @@ def get_points_set_and_points_list_and_segments(edges):
     # read points from dumps
     ALL_POINTS = pd.read_csv('../ALLPOINT.csv')
 
+    # if u want to recompile min-max values for x and y coordinates, uncoment next 4 rows
+    # print("max X = {}".format(max(ALL_POINTS.iterrows(), key=lambda x: x[1]['X'])))
+    # print("min X = {}".format(min(ALL_POINTS.iterrows(), key=lambda x: x[1]['X'])))
+    # print("max Y = {}".format(max(ALL_POINTS.iterrows(), key=lambda x: x[1]['Y'])))
+    # print("min Y = {}".format(min(ALL_POINTS.iterrows(), key=lambda x: x[1]['Y'])))
+
     points_dict = dict()
     points_set = set()
     points_list = list()
     segments = list()
     # initialize empty initial point
     previous_point = Point()
+
+
 
     for index, row in ALL_POINTS.iterrows():
         point = Point(index, row['X'], row['Y'], row['id_eje'])
@@ -80,8 +98,10 @@ if __name__ == '__main__':
 
     print(len(st))
     print(len(lst))
-    for item in segments:
-        print('edge Id - {}'.format(item['edge_id']))
-        print('edge Dir - {}'.format(edges[item['edge_id']]['direction']))
-        print('from {}'.format(item['from']))
-        print('to   {}'.format(item['to']))
+
+
+    # for item in segments:
+    #     print('edge Id - {}'.format(item['edge_id']))
+    #     print('edge Dir - {}'.format(edges[item['edge_id']]['direction']))
+    #     print('from {}'.format(item['from']))
+    #     print('to   {}'.format(item['to']))
