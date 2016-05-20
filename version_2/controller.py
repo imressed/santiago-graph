@@ -1,5 +1,7 @@
+import copy
 import pandas as pd
-from helpers import timed, euclidean
+from helpers import timed, euclidean, segment_intersection
+from itertools import combinations
 from point import Point
 
 
@@ -13,6 +15,8 @@ min_x = 2536497904
 
 max_y = 63569714121
 min_y = 62065572485
+
+points_index = 0
 
 
 @timed
@@ -70,6 +74,7 @@ def get_points_set_and_points_list_and_segments(edges):
 
         # create current point
         point = Point(index, row['X'], row['Y'], row['id_eje'], point_cell)
+        points_index = index
         #get edge, connected with this point
         current_edge = edges[point.edge_id]
         # calculate segment. first check if current point has the same edge with previous one.
@@ -145,9 +150,10 @@ def get_points_from_neighbor_sectors(sectors, current_sector_id):
 def near_points_error(sectors, segments, points_set_dict):
     # track total number of error classes
     error_classes = 0
+    #statistics
+    points_substitution_dict = {}
     #iterate through each sector
     for key,values in sectors.items():
-        print(key)
         #get points from all nearby sectors, including current
         points_array = get_points_from_neighbor_sectors(sectors, key)
         #iterate through each point in sector
@@ -164,6 +170,11 @@ def near_points_error(sectors, segments, points_set_dict):
                     origin_point = points_set_dict[(point.x, point.y)]
                     #assign origin id for this point
                     point.id = origin_point.id
+                    # track points substitution
+                    if origin_point in points_substitution_dict.keys():
+                        points_substitution_dict[origin_point].extend([point, neighbour_point])
+                    else:
+                        points_substitution_dict[origin_point] = [point, neighbour_point]
                     #assign origin id, x and y for this point
                     neighbour_point.id = origin_point.id
                     neighbour_point.x = origin_point.x
@@ -173,9 +184,51 @@ def near_points_error(sectors, segments, points_set_dict):
     print(error_classes)
 
 
+@timed
+def intersection_segments_error(sectors, segments, points_set_dict):
+    # track total number of intersections in data
+    intersections_classes = 0
+    global points_index
+    for key,value in sectors.items():
+        print(key)
+        points_array = value
+        current_segments_array = []
+        for point in points_array:
+            current_segments_array.extend([segment for segment in segments if segment['from'] == point or segment['to'] == point])
+        for segment_pair in combinations(current_segments_array, 2):
+            if segment_pair[0]['hierarchy'] != segment_pair[1]['hierarchy']:
+                continue
+            check_intersection = segment_intersection([segment_pair[0]['from'],segment_pair[0]['to']],[segment_pair[1]['from'],segment_pair[1]['to']])
+            if check_intersection:
+                intersections_classes += 1
+                points_index += 1
+                intersection_point = Point(points_index, check_intersection[0], check_intersection[1], -1, key)
+                if intersection_point != segment_pair[0]['from'] and intersection_point != segment_pair[0]['to']:
+                    to_point = copy.deapcopy(segment_pair[0]['to'])
+                    segment_pair[0]['to'] = intersection_point
+                    segment_pair[0]['length'] = euclidean((intersection_point.x,intersection_point.y),(segment_pair[0]['from'].x,segment_pair[0]['from'].y))
+                    segments.append({
+                        'from': intersection_point,
+                        'to': to_point,
+                        'hierarchy': segment_pair[0]['hierarchy'],
+                        'street_id': segment_pair[0]['street_id'],
+                        'edge_id': segment_pair[0]['edge_id'],
+                        'length': euclidean((intersection_point.x,intersection_point.y),(to_point.x,to_point.y))
+                    })
+                if intersection_point != segment_pair[1]['from'] and intersection_point != segment_pair[1]['to']:
+                    to_point = copy.deapcopy(segment_pair[1]['to'])
+                    segment_pair[1]['to'] = intersection_point
+                    segment_pair[1]['length'] = euclidean((intersection_point.x,intersection_point.y),(segment_pair[1]['from'].x,segment_pair[1]['from'].y))
+                    segments.append({
+                        'from': intersection_point,
+                        'to': to_point,
+                        'hierarchy': segment_pair[1]['hierarchy'],
+                        'street_id': segment_pair[1]['street_id'],
+                        'edge_id': segment_pair[1]['edge_id'],
+                        'length': euclidean((intersection_point.x,intersection_point.y),(to_point.x,to_point.y))
+                    })
 
-
-
+    print(intersections_classes)
 
 if __name__ == '__main__':
 
@@ -187,11 +240,7 @@ if __name__ == '__main__':
 
     near_points_error(sectors,segments,points_set_dict)
 
-    print(len(points_set))
-    print(len(points_list))
-    print(len(points_set_dict))
-
-
+    intersection_segments_error(sectors,segments,points_set_dict)
 
 
     # for item in segments:
