@@ -145,6 +145,8 @@ def get_points_from_neighbor_sectors(sectors, current_sector_id):
 def near_points_error(sectors, segments, points_set_dict):
     # track total number of error classes
     error_classes = 0
+    #statistics
+    points_substitution_dict = {}
     #iterate through each sector
     for key,values in sectors.items():
         print(key)
@@ -164,6 +166,12 @@ def near_points_error(sectors, segments, points_set_dict):
                     origin_point = points_set_dict[(point.x, point.y)]
                     #assign origin id for this point
                     point.id = origin_point.id
+                    if origin_point in points_substitution_dict:
+                        points_substitution_dict[origin_point] =
+                            points_substitution_dict[origin_point].extend([point, neighbour_point])
+                    else:
+                        points_substitution_dict[origin_point] = [point, neighbour_point]
+
                     #assign origin id, x and y for this point
                     neighbour_point.id = origin_point.id
                     neighbour_point.x = origin_point.x
@@ -190,8 +198,6 @@ if __name__ == '__main__':
     print(len(points_set))
     print(len(points_list))
     print(len(points_set_dict))
-
-
 
 
     # for item in segments:
