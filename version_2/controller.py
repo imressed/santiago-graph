@@ -213,29 +213,46 @@ def near_points_error(sectors, segments, points_set_dict):
 def intersection_segments_error(sectors, segments, segments_dict, points_set_dict):
     # track total number of intersections in data
     intersections_classes = 0
+    #track total number of fixed intersections
     fixed_intersections = 0
+    #get number of added points
     global points_index
+    # iterate through sectors and get items from each sector
     for key,value in sectors.items():
         print(key)
+        # assign points from sector to points_array
         points_array = value
+        # init array of all segments in this sector
         current_segments_array = []
         for point in points_array:
+            # if we have segments connected with current point in segments dict, add them to current_segments_array
             if point in segments_dict:
                 current_segments_array.extend(segments_dict[point])
         print("{0} p - {1} segm".format(len(points_array),len(current_segments_array)))
+        # iterate through all pairs of segments from current_segments_array
         for segment_pair in combinations(current_segments_array, 2):
+            # if the segments has different hierarchy, pass
             if segment_pair[0]['hierarchy'] != segment_pair[1]['hierarchy']:
                 continue
+            # check if this two segmetns intersect
             check_intersection = segment_intersection([segment_pair[0]['from'],segment_pair[0]['to']],[segment_pair[1]['from'],segment_pair[1]['to']])
             if check_intersection:
+                # if the segmetns intersect, increment points_index and number of intersections_classes
                 intersections_classes += 1
                 points_index += 1
+                # create new point on this intersection
                 intersection_point = Point(points_index, check_intersection[0], check_intersection[1], -1, key)
+                # check if intersection point is not the end or start of first segment
                 if intersection_point != segment_pair[0]['from'] and intersection_point != segment_pair[0]['to']:
+                    # increment number of fixed intersections
                     fixed_intersections += 1
+                    # make copy of end point of segment(create new object)
                     to_point = copy.deepcopy(segment_pair[0]['to'])
+                    # change the end point of current segment to intersection_point
                     segment_pair[0]['to'] = intersection_point
+                    # and recalculate segment length
                     segment_pair[0]['length'] = euclidean((intersection_point.x,intersection_point.y),(segment_pair[0]['from'].x,segment_pair[0]['from'].y))
+                    # then create new segment starting in intersection_point and ending in initial segment end point
                     segments.append({
                         'from': intersection_point,
                         'to': to_point,
@@ -249,6 +266,7 @@ def intersection_segments_error(sectors, segments, segments_dict, points_set_dic
                     points_list.append(intersection_point)
                     points_set_dict[(intersection_point.x,intersection_point.y)] = intersection_point
 
+                # check if intersection point is not the end or start of second segment
                 if intersection_point != segment_pair[1]['from'] and intersection_point != segment_pair[1]['to']:
                     fixed_intersections += 1
                     to_point = copy.deepcopy(segment_pair[1]['to'])
