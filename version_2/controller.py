@@ -206,8 +206,7 @@ def near_points_error(sectors, segments, points_set_dict):
                     neighbour_point.y = origin_point.y
                     #increment error clusses counter
                     error_classes+=1
-    print("Near Points Errors Log: total classes - {0}, fixed - {0}".format(error_classes, fixed_intersections))
-    print(error_classes)
+    print("Near Points Errors Log: total classes - {0}, fixed - {0}".format(error_classes))
 
 
 @timed
