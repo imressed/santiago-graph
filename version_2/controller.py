@@ -63,6 +63,7 @@ def get_points_set_and_points_list_and_segments(edges):
     points_set = set()
     points_list = list()
     segments = list()
+    segments_dict = dict()
     # initialize empty initial point
     previous_point = Point()
 
@@ -100,6 +101,7 @@ def get_points_set_and_points_list_and_segments(edges):
                 })
         previous_point = point
 
+
         #set of unique points in dump
         points_set.add(point)
         #list of all points in dump
@@ -108,7 +110,30 @@ def get_points_set_and_points_list_and_segments(edges):
     for point in list(points_set):
         points_set_dict[(point.x,point.y)] = point
 
-    return points_set, points_list, segments, points_set_dict
+    for segment in segments:
+        if segment['from'] in segments_dict:
+            segments_dict[segment['from']].append(segment)
+        else:
+            segments_dict[segment['from']] = [segment]
+        if segment['to'] in segments_dict:
+            segments_dict[segment['to']].append(segment)
+        else:
+            segments_dict[segment['to']] = [segment]
+
+    return points_set, points_list, segments, segments_dict, points_set_dict
+
+
+@timed
+def recalculate_segments_dict(segments, segments_dict):
+    for segment in segments:
+        if segment['from'] in segments_dict:
+            segments_dict[segment['from']].append(segment)
+        else:
+            segments_dict[segment['from']] = [segment]
+        if segment['to'] in segments_dict:
+            segments_dict[segment['to']].append(segment)
+        else:
+            segments_dict[segment['to']] = [segment]
 
 
 @timed
@@ -185,16 +210,19 @@ def near_points_error(sectors, segments, points_set_dict):
 
 
 @timed
-def intersection_segments_error(sectors, segments, points_set_dict):
+def intersection_segments_error(sectors, segments, segments_dict, points_set_dict):
     # track total number of intersections in data
     intersections_classes = 0
+    fixed_intersections = 0
     global points_index
     for key,value in sectors.items():
         print(key)
         points_array = value
         current_segments_array = []
         for point in points_array:
-            current_segments_array.extend([segment for segment in segments if segment['from'] == point or segment['to'] == point])
+            if point in segments_dict:
+                current_segments_array.extend(segments_dict[point])
+        print("{0} p - {1} segm".format(len(points_array),len(current_segments_array)))
         for segment_pair in combinations(current_segments_array, 2):
             if segment_pair[0]['hierarchy'] != segment_pair[1]['hierarchy']:
                 continue
@@ -204,7 +232,8 @@ def intersection_segments_error(sectors, segments, points_set_dict):
                 points_index += 1
                 intersection_point = Point(points_index, check_intersection[0], check_intersection[1], -1, key)
                 if intersection_point != segment_pair[0]['from'] and intersection_point != segment_pair[0]['to']:
-                    to_point = copy.deapcopy(segment_pair[0]['to'])
+                    fixed_intersections += 1
+                    to_point = copy.deepcopy(segment_pair[0]['to'])
                     segment_pair[0]['to'] = intersection_point
                     segment_pair[0]['length'] = euclidean((intersection_point.x,intersection_point.y),(segment_pair[0]['from'].x,segment_pair[0]['from'].y))
                     segments.append({
@@ -215,8 +244,14 @@ def intersection_segments_error(sectors, segments, points_set_dict):
                         'edge_id': segment_pair[0]['edge_id'],
                         'length': euclidean((intersection_point.x,intersection_point.y),(to_point.x,to_point.y))
                     })
+                    #update data with new point
+                    points_set.add(intersection_point)
+                    points_list.append(intersection_point)
+                    points_set_dict[(intersection_point.x,intersection_point.y)] = intersection_point
+
                 if intersection_point != segment_pair[1]['from'] and intersection_point != segment_pair[1]['to']:
-                    to_point = copy.deapcopy(segment_pair[1]['to'])
+                    fixed_intersections += 1
+                    to_point = copy.deepcopy(segment_pair[1]['to'])
                     segment_pair[1]['to'] = intersection_point
                     segment_pair[1]['length'] = euclidean((intersection_point.x,intersection_point.y),(segment_pair[1]['from'].x,segment_pair[1]['from'].y))
                     segments.append({
@@ -227,20 +262,26 @@ def intersection_segments_error(sectors, segments, points_set_dict):
                         'edge_id': segment_pair[1]['edge_id'],
                         'length': euclidean((intersection_point.x,intersection_point.y),(to_point.x,to_point.y))
                     })
+                    #update data with new point
+                    points_set.add(intersection_point)
+                    points_list.append(intersection_point)
+                    points_set_dict[(intersection_point.x,intersection_point.y)] = intersection_point
 
-    print(intersections_classes)
+    print("total intersection classes {0}, fixed intersections {1}".format(intersections_classes, fixed_intersections))
 
 if __name__ == '__main__':
 
     edges = get_edges()
 
-    points_set, points_list, segments, points_set_dict = get_points_set_and_points_list_and_segments(edges)
+    points_set, points_list, segments, segments_dict, points_set_dict = get_points_set_and_points_list_and_segments(edges)
 
     sectors = map_points_to_sectors(points_list)
 
     near_points_error(sectors,segments,points_set_dict)
 
-    intersection_segments_error(sectors,segments,points_set_dict)
+    intersection_segments_error(sectors,segments,segments_dict,points_set_dict)
+
+    recalculate_segments_dict(segments, segments_dict)
 
 
     # for item in segments:
