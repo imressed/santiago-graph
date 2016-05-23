@@ -1,6 +1,6 @@
 import copy
 import pandas as pd
-from helpers import timed, euclidean, segment_intersection
+from helpers import timed, euclidean, segment_intersection, distance_point_line
 from itertools import combinations
 from point import Point
 
@@ -206,6 +206,7 @@ def near_points_error(sectors, segments, points_set_dict):
                     neighbour_point.y = origin_point.y
                     #increment error clusses counter
                     error_classes+=1
+    print("Near Points Errors Log: total classes - {0}, fixed - {0}".format(error_classes, fixed_intersections))
     print(error_classes)
 
 
@@ -219,7 +220,7 @@ def intersection_segments_error(sectors, segments, segments_dict, points_set_dic
     global points_index
     # iterate through sectors and get items from each sector
     for key,value in sectors.items():
-        print(key)
+        # print(key)
         # assign points from sector to points_array
         points_array = value
         # init array of all segments in this sector
@@ -228,7 +229,7 @@ def intersection_segments_error(sectors, segments, segments_dict, points_set_dic
             # if we have segments connected with current point in segments dict, add them to current_segments_array
             if point in segments_dict:
                 current_segments_array.extend(segments_dict[point])
-        print("{0} p - {1} segm".format(len(points_array),len(current_segments_array)))
+        # print("{0} p - {1} segm".format(len(points_array),len(current_segments_array)))
         # iterate through all pairs of segments from current_segments_array
         for segment_pair in combinations(current_segments_array, 2):
             # if the segments has different hierarchy, pass
@@ -240,8 +241,8 @@ def intersection_segments_error(sectors, segments, segments_dict, points_set_dic
                 # if the segmetns intersect, increment points_index and number of intersections_classes
                 intersections_classes += 1
                 points_index += 1
-                # create new point on this intersection
-                intersection_point = Point(points_index, check_intersection[0], check_intersection[1], -1, key)
+                # create new point on this intersection (hack! add edge_id for tracking hierarchy of created point)
+                intersection_point = Point(points_index, check_intersection[0], check_intersection[1], segment_pair[0]['hierarchy'], key)
                 # check if intersection point is not the end or start of first segment
                 if intersection_point != segment_pair[0]['from'] and intersection_point != segment_pair[0]['to']:
                     # increment number of fixed intersections
@@ -285,7 +286,57 @@ def intersection_segments_error(sectors, segments, segments_dict, points_set_dic
                     points_list.append(intersection_point)
                     points_set_dict[(intersection_point.x,intersection_point.y)] = intersection_point
 
-    print("total intersection classes {0}, fixed intersections {1}".format(intersections_classes, fixed_intersections))
+    print("Intersections Errors Log: total classes - {0}, fixed - {1}".format(intersections_classes, fixed_intersections))
+
+
+@timed
+def near_segment_error(sectors,segments,segments_dict,points_set_dict):
+    # track total number of intersections in data
+    near_points_classes = 0
+    #track total number of fixed intersections
+    fixed_near_points = 0
+    #get number of added points
+    global points_index
+    # iterate through sectors and get items from each sector
+    for key,value in sectors.items():
+        #print(key)
+        # assign points from sector to points_array
+        points_array = value
+        # init array of all segments in this sector
+        current_segments_array = []
+        for point in points_array:
+            # if we have segments connected with current point in segments dict, add them to current_segments_array
+            if point in segments_dict:
+                current_segments_array.extend(segments_dict[point])
+        #print("{0} p - {1} segm".format(len(points_array),len(current_segments_array)))
+        for point in points_array:
+            for sector_segment in current_segments_array:
+                if edges[point.edge_id]['hierarchy'] != sector_segment['hierarchy']:
+                    continue
+                distance_segment_point = distance_point_line(point.x, point.y,
+                                                            sector_segment['from'].x, sector_segment['from'].y,
+                                                            sector_segment['to'].x, sector_segment['to'].y)
+
+                if distance_segment_point < MERGE_RADIUS:
+                    near_points_classes += 1
+                    if point != sector_segment['from'] and point != sector_segment['to']:
+                        fixed_near_points += 1
+                        to_point = copy.deepcopy(sector_segment['to'])
+                        # change the end point of current segment to intersection_point
+                        sector_segment['to'] = point
+                        # and recalculate segment length
+                        sector_segment['length'] = euclidean((point.x,point.y),(sector_segment['from'].x,sector_segment['from'].y))
+                        # then create new segment starting in intersection_point and ending in initial segment end point
+                        segments.append({
+                            'from': point,
+                            'to': to_point,
+                            'hierarchy': sector_segment['hierarchy'],
+                            'street_id': sector_segment['street_id'],
+                            'edge_id': sector_segment['edge_id'],
+                            'length': euclidean((point.x,point.y),(to_point.x,to_point.y))
+                        })
+    print("Near Segment Errors Log: total classes {0}, fixed {1}".format(near_points_classes, fixed_near_points))
+
 
 if __name__ == '__main__':
 
@@ -295,11 +346,13 @@ if __name__ == '__main__':
 
     sectors = map_points_to_sectors(points_list)
 
-    near_points_error(sectors,segments,points_set_dict)
+    near_points_error(sectors, segments, points_set_dict)
 
     intersection_segments_error(sectors,segments,segments_dict,points_set_dict)
 
     recalculate_segments_dict(segments, segments_dict)
+
+    near_segment_error(sectors,segments,segments_dict,points_set_dict)
 
 
     # for item in segments:
