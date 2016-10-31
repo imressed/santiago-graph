@@ -32,6 +32,8 @@ class Edge:
         self.speed_indicators['trafic_jam_speed'] = data['V_PEAK']
         self.speed_indicators['noramal_speed'] = data['V_VALLE']
         self.speed_indicators['walking_speed'] = data['V_CAM']
+		
+		self.instructions = {"asdf": 123}
 
 class CalculatedEdge:
     '''
