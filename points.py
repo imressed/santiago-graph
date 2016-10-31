@@ -53,7 +53,13 @@ class Points:
     def save_to_file(self, filename='points'):
         sys.setrecursionlimit(100000)
         pickle.dump(self._points, open(filename, 'wb'))
-
+	
+	def update_to_file(self, filename='routes'):
+        sys.setrecursionlimit(10)
+		sys.update(10)
+        pickle.dump(self._points, open(filename, 'wb'))
+	
+	
     def _init_min_max_values(self,row):
         self.min_y = row['Y']
         self.max_y = row['Y']
