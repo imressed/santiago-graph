@@ -19,6 +19,8 @@ class Point:
         edge_id: a integer that represents initial edge for this Point
         new_edge_id: a integer that represents new edge for this Point (usage: new_edge_id = 0 ? edge_id: new_edge_id)
         hierarchy: a integer that reperesents a hierarchy of route (expected values 1-5 ?)
+		
+		also add some documantations to this file
 
     Methods:
         set_cell: requires cell:int, set cell for this Point
