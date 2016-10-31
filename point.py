@@ -41,6 +41,10 @@ class Point:
         self.from_me = []
         self.to_me = []
         self.is_waypoint = is_waypoint
+		
+		
+		self.data = [1,2,3,4,5]
+		self.remove_wtf = true;
 
     def set_cell(self, cell):
         self.cell = cell
